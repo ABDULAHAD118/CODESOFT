@@ -12,15 +12,22 @@ private:
 public:
 	void intro();
 	void creatTask();
-	void updateTask();
+	void modifystatus();
+	void updatestatus(int);
 	void deleteTask(int);
-	void showAllTask();
-	int retID();
+	void showAllTask() const;
+	int retID() const;
 };
 
 void toDoList ::intro()
 {
-	cout << "Created By Abdulahad";
+	cout << "\t\t\t####### #######    ######  #######    #       ###  #####  ####### " << endl;
+	cout << "\t\t\t   #    #     #    #     # #     #    #        #  #     #    #    " << endl;
+	cout << "\t\t\t   #    #     #    #     # #     #    #        #  #          #    " << endl;
+	cout << "\t\t\t   #    #     #    #     # #     #    #        #   #####     #    " << endl;
+	cout << "\t\t\t   #    #     #    #     # #     #    #        #        #    #    " << endl;
+	cout << "\t\t\t   #    #     #    #     # #     #    #        #  #     #    #    " << endl;
+	cout << "\t\t\t   #    #######    ######  #######    ####### ###  #####     #    " << endl;
 }
 
 void toDoList ::creatTask()
@@ -35,21 +42,26 @@ void toDoList ::creatTask()
 	cin >> status;
 }
 
-void toDoList ::showAllTask()
+void toDoList ::showAllTask() const
 {
 	cout << "Id Of Task : " << id << endl;
 	cout << "Task : " << data << endl;
 	cout << "Status : " << status << endl;
 }
 
-void toDoList ::updateTask()
+void toDoList ::modifystatus()
 {
+	cout << "Id Of Task : " << id << endl;
+	cout << "Task : " << data << endl;
+	cout << "Enter the status : ";
+	cin >> status;
 }
 
-void toDoList ::deleteTask(int num)
+void toDoList ::updatestatus(int num)
 {
 	toDoList list;
 	ifstream inFile;
+	ofstream outFile;
 	inFile.open("Data.txt", ios::app | ios::binary);
 	if (!inFile)
 	{
@@ -57,31 +69,68 @@ void toDoList ::deleteTask(int num)
 		cin.ignore();
 		cin.get();
 	}
-	ofstream outFile;
-	outFile.open("Temp.txt");
-	inFile.seekg(0, ios::beg);
-	while (inFile.read((char *)&list, sizeof(toDoList)))
+	else
 	{
-		if (list.retID() != num)
+		outFile.open("Temp.txt", ios::binary);
+		while (inFile.read((char *)&list, sizeof(toDoList)))
 		{
+			if (list.retID() == num)
+			{
+				cout << "Updating status for Task with ID: " << num << endl;
+				list.modifystatus();
+			}
 			outFile.write((char *)&list, sizeof(toDoList));
-			cout << "Record Not Exist ..";
-			break;
 		}
-		else
-		{
-			cout << "Record Deleted ..";
-		}
+		outFile.close();
+		inFile.close();
+		remove("Data.txt");
+		rename("Temp.txt", "Data.txt");
+		cin.ignore();
 	}
-	outFile.close();
-	inFile.close();
-	remove("Data.txt");
-	rename("Temp.txt", "Data.txt");
-	cin.ignore();
-	cin.get();
 }
 
-int toDoList::retID()
+void toDoList ::deleteTask(int num)
+{
+	toDoList list;
+	ifstream inFile;
+	ofstream outFile;
+	inFile.open("Data.txt", ios::app | ios::binary);
+	if (!inFile)
+	{
+		cout << "File could not be open !! Press any Key...";
+		cin.ignore();
+		cin.get();
+	}
+	else
+	{
+		bool recordFound = false;
+		outFile.open("Temp.txt", ios::binary);
+		while (inFile.read((char *)&list, sizeof(toDoList)))
+		{
+			if (list.retID() == num)
+			{
+				cout << "Record Deleted ..";
+				recordFound = true;
+			}
+			else
+			{
+				outFile.write((char *)&list, sizeof(toDoList));
+			}
+		}
+		if (!recordFound)
+		{
+			cout << "Record Not Found ..";
+		}
+		outFile.close();
+		inFile.close();
+		remove("Data.txt");
+		rename("Temp.txt", "Data.txt");
+		cin.ignore();
+		cin.get();
+	}
+}
+
+int toDoList::retID() const
 {
 	return id;
 }
@@ -104,8 +153,10 @@ int main()
 		cout << "3. Mark Task as Completed" << endl;
 		cout << "4. Delete Task" << endl;
 		cout << "5. Quit" << endl;
+
 		cout << "Enter your choice: ";
 		cin >> choice;
+		system("cls");
 		switch (choice)
 		{
 		case '1':
@@ -132,18 +183,21 @@ int main()
 			{
 				list.showAllTask();
 			}
+			inFile.close();
 			cin.ignore();
 			cin.get();
-			inFile.close();
-
 			break;
 		}
 		case '3':
-			list.updateTask();
+		{
+			cout << "Enter The Id Of Task You Want To Update The Status : ";
+			cin >> num;
+			list.updatestatus(num);
 			break;
+		}
 		case '4':
 		{
-			cout << "Enter The Id Of Task You Want To Delete ";
+			cout << "Enter The Id Of Task You Want To Delete : ";
 			cin >> num;
 			list.deleteTask(num);
 			break;
