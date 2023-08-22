@@ -33,27 +33,28 @@ void toDoList ::intro()
 void toDoList ::creatTask()
 {
 
-	cout << "Enter The Id Of The Task : ";
+	cout << "\n\n\t\tEnter The Id Of The Task : ";
 	cin >> id;
-	cout << "Write The Detail Of Task : ";
+	cout << "\t\tWrite The Detail Of Task : ";
 	cin.ignore();
 	cin.getline(data, 50);
-	cout << "Enter The Status Of Task (Pending/Approval): ";
+	cout << "\t\tEnter The Status Of Task (Pending/Approval): ";
 	cin >> status;
 }
 
 void toDoList ::showAllTask() const
 {
-	cout << "Id Of Task : " << id << endl;
-	cout << "Task : " << data << endl;
-	cout << "Status : " << status << endl;
+	cout << "\n\n\t\tId Of Task : " << id << endl;
+	cout << "\t\tTask : " << data << endl;
+	cout << "\t\tStatus : " << status << endl;
+	cout<<"\t\t==================="<<endl;
 }
 
 void toDoList ::modifystatus()
 {
-	cout << "Id Of Task : " << id << endl;
-	cout << "Task : " << data << endl;
-	cout << "Enter the status : ";
+	cout << "\t\tId Of Task : " << id << endl;
+	cout << "\t\tTask : " << data << endl;
+	cout << "\t\tEnter the status : ";
 	cin >> status;
 }
 
@@ -71,15 +72,22 @@ void toDoList ::updatestatus(int num)
 	}
 	else
 	{
+		bool recordFound = false;
 		outFile.open("Temp.txt", ios::binary);
 		while (inFile.read((char *)&list, sizeof(toDoList)))
 		{
 			if (list.retID() == num)
 			{
-				cout << "Updating status for Task with ID: " << num << endl;
+				cout << "\t\tUpdating status for Task with ID: " << num << endl;
 				list.modifystatus();
+					recordFound = true;
 			}
-			outFile.write((char *)&list, sizeof(toDoList));
+				outFile.write((char *)&list, sizeof(toDoList));
+			
+		}
+		if (!recordFound)
+		{
+			cout << "Record Not Found ..";
 		}
 		outFile.close();
 		inFile.close();
@@ -109,7 +117,7 @@ void toDoList ::deleteTask(int num)
 		{
 			if (list.retID() == num)
 			{
-				cout << "Record Deleted ..";
+				cout << "\t\tRecord Deleted ..";
 				recordFound = true;
 			}
 			else
@@ -147,14 +155,14 @@ int main()
 	bool flag = true;
 	while (flag)
 	{
-		cout << "To-Do List Manager" << endl;
-		cout << "1. Creat Task" << endl;
-		cout << "2. View Tasks" << endl;
-		cout << "3. Mark Task as Completed" << endl;
-		cout << "4. Delete Task" << endl;
-		cout << "5. Quit" << endl;
+		cout << "\n\n\t\tTo-Do List Manager" << endl;
+		cout << "\n\t\t1. Creat Task" << endl;
+		cout << "\n\t\t2. View Tasks" << endl;
+		cout << "\n\t\t3. Mark Task as Completed" << endl;
+		cout << "\n\t\t4. Delete Task" << endl;
+		cout << "\n\t\t5. Quit" << endl;
 
-		cout << "Enter your choice: ";
+		cout << "\n\n\t\tEnter your choice: ";
 		cin >> choice;
 		system("cls");
 		switch (choice)
@@ -166,6 +174,7 @@ int main()
 			list.creatTask();
 			out.write((char *)&list, sizeof(toDoList));
 			out.close();
+			system("cls");
 			break;
 		}
 		case '2':
@@ -186,20 +195,23 @@ int main()
 			inFile.close();
 			cin.ignore();
 			cin.get();
+			system("cls");
 			break;
 		}
 		case '3':
 		{
-			cout << "Enter The Id Of Task You Want To Update The Status : ";
+			cout << "\n\n\t\tEnter The Id Of Task You Want To Update The Status : ";
 			cin >> num;
 			list.updatestatus(num);
+			system("cls");
 			break;
 		}
 		case '4':
 		{
-			cout << "Enter The Id Of Task You Want To Delete : ";
+			cout << "\n\n\t\tEnter The Id Of Task You Want To Delete : ";
 			cin >> num;
 			list.deleteTask(num);
+			system("cls");
 			break;
 		}
 		case '5':
