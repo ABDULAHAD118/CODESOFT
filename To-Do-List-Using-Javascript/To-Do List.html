@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>To-Do List</title>
+    <link rel="shortcut icon" href="icon.png" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link rel="stylesheet" href="//cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/abeaec3c5b.js" crossorigin="anonymous"></script>
+</head>
+
+<body >
+    <h1 class="mt-5">WELCOME TO TO-DO LIST</h1>
+    <div class="form__group mt-5">
+        <form>
+            <input type="text" class="form__input" id="title" placeholder="Title" required="" />
+            <label for="name" class="form__label">Title</label>
+            <input class="btn btn-outline-secondary mx-4" onclick="newElement()" type="button" value="Submit">
+            <button class="btn btn-outline-secondary mx-4" type="reset">Clear</button>
+        </form>
+    </div>
+    <ul id="myUL" class="w-50 mt-4"></ul>
+
+    <script>
+        // Load tasks with their classes from local storage
+        var tasksWithClasses = localStorage.getItem("tasksWithClasses") ? JSON.parse(localStorage.getItem("tasksWithClasses")) : [];
+
+        // Function to update local storage with tasks and classes
+        function updateLocalStorage() {
+            localStorage.setItem("tasksWithClasses", JSON.stringify(tasksWithClasses));
+        }
+
+        // Function to create a close button
+        function createCloseButton(listItem) {
+            var closeButton = document.createElement("span");
+            closeButton.className = "close";
+            var icon = document.createElement("i");
+            icon.className = "fa-solid fa-xmark";
+            closeButton.appendChild(icon);
+            closeButton.addEventListener("click", function () {
+                var taskIndex = tasksWithClasses.findIndex(task => task.text === listItem.textContent && task.className === listItem.className);
+                tasksWithClasses.splice(taskIndex, 1);
+                updateLocalStorage();
+                listItem.remove();
+            });
+            return closeButton;
+        }
+
+        // Function to create an edit button
+        function createEditButton(listItem) {
+            var editButton = document.createElement("span");
+            editButton.className = "edit";
+            var icon = document.createElement("i");
+            icon.className = "fa-solid fa-pen-to-square";
+            editButton.appendChild(icon);
+            editButton.addEventListener("click", function () {
+                // Get the task text and class
+                var taskText = listItem.childNodes[0].nodeValue.trim();
+                var taskClass = listItem.className;
+
+                var updatedValue = prompt("Edit task:", taskText);
+                if (updatedValue !== null && updatedValue !== "") {
+                    listItem.childNodes[0].nodeValue = updatedValue; // Update task text
+                    var taskIndex = tasksWithClasses.findIndex(task => task.text === taskText && task.className === taskClass);
+                    tasksWithClasses[taskIndex].text = updatedValue;
+                    updateLocalStorage();
+                }
+            });
+            return editButton;
+        }
+
+        // Add a "checked" symbol when clicking on a list item
+        function setupCheckedSymbol() {
+            var list = document.querySelector('ul');
+            list.addEventListener('click', function (ev) {
+                if (ev.target.tagName === 'LI') {
+                    ev.target.classList.toggle('checked');
+                    updateLocalStorage(); // Update local storage on checking/unchecking
+                }
+            }, false);
+        }
+
+        // Create a new list item when clicking on the "Add" button
+        function newElement() {
+            var inputValue = document.getElementById("title").value;
+            if (inputValue === '') {
+                alert("You must write something!");
+            } else {
+                var li = document.createElement("li");
+                li.className = 'list';
+                var t = document.createTextNode(inputValue);
+                li.appendChild(t);
+
+                // Add close and edit buttons to the list item
+                li.appendChild(createCloseButton(li));
+                li.appendChild(createEditButton(li));
+
+                document.getElementById("myUL").appendChild(li);
+
+                // Save task and its class to the array
+                tasksWithClasses.push({
+                    text: inputValue,
+                    className: li.className
+                });
+
+                updateLocalStorage();
+            }
+            document.getElementById("title").value = "";
+        }
+
+        // Initialize the To-Do List
+        function initializeTodoList() {
+            var listContainer = document.getElementById("myUL");
+            listContainer.innerHTML = ""; // Clear existing content
+            tasksWithClasses.forEach(function (task) {
+                var li = document.createElement("li");
+                var t = document.createTextNode(task.text);
+                li.className = task.className;
+                li.appendChild(t);
+
+                // Add close and edit buttons to the list item
+                li.appendChild(createCloseButton(li));
+                li.appendChild(createEditButton(li));
+
+                listContainer.appendChild(li);
+            });
+            setupCheckedSymbol();
+        }
+
+        // Initialize the To-Do List on page load
+        initializeTodoList();
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
